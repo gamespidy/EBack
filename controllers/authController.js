@@ -15,8 +15,8 @@ const User = require('../models/User');
  * @param {string} email - User's email
  * @returns {string} JWT token valid for 30 days
  */
-const generateToken = (id, email) => {
-  return jwt.sign({ id, email }, process.env.JWT_SECRET, {
+const generateToken = (id, email, role) => {
+  return jwt.sign({ id, email, role }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   });
 };
@@ -57,7 +57,7 @@ const register = async (req, res) => {
     });
 
     // Generate JWT token
-    const token = generateToken(user._id, user.email);
+    const token = generateToken(user._id, user.email, user.role);
 
     // Return success response
     res.status(201).json({
@@ -70,6 +70,7 @@ const register = async (req, res) => {
         mobile: user.mobile,
         age: user.age,
         country: user.country,
+        role: user.role,
         token,
       },
     });
@@ -118,7 +119,7 @@ const login = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = generateToken(user._id, user.email);
+    const token = generateToken(user._id, user.email, user.role);
 
     // Return success response
     res.status(200).json({
@@ -131,6 +132,7 @@ const login = async (req, res) => {
         mobile: user.mobile,
         age: user.age,
         country: user.country,
+        role: user.role,
         token,
       },
     });

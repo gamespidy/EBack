@@ -99,4 +99,46 @@ const getCategories = async (req, res) => {
   }
 };
 
-module.exports = { getProducts, getProductById, getCategories };
+// ==============================================
+// POST /api/products
+// Create a new product (Admin Only)
+// ==============================================
+const createProduct = async (req, res) => {
+  try {
+    const { name, description, price, originalPrice, category, sizes, colors, image, stock, featured } = req.body;
+
+    if (!name || !price || !category || !image || stock === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, price, category, image, and stock are required',
+      });
+    }
+
+    const product = await Product.create({
+      name,
+      description: description || '',
+      price: Number(price),
+      originalPrice: originalPrice ? Number(originalPrice) : undefined,
+      category,
+      sizes: sizes || ['S', 'M', 'L'],
+      colors: colors || ['Black', 'White'],
+      image,
+      stock: Number(stock),
+      featured: featured || false,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Product created successfully',
+      data: product,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error creating product',
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { getProducts, getProductById, getCategories, createProduct };

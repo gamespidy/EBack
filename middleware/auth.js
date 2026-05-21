@@ -30,8 +30,8 @@ const protect = (req, res, next) => {
     // Verify the token using our secret
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Attach user ID to the request object
-    req.user = { id: decoded.id, email: decoded.email };
+    // Attach user ID and role to the request object
+    req.user = { id: decoded.id, email: decoded.email, role: decoded.role };
 
     next(); // Continue to the next middleware/route handler
   } catch (error) {
@@ -42,4 +42,18 @@ const protect = (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+/**
+ * admin - Middleware to check if user is an admin
+ */
+const admin = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({
+      success: false,
+      message: 'Not authorized as an admin',
+    });
+  }
+};
+
+module.exports = { protect, admin };

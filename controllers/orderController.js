@@ -30,9 +30,16 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    // Calculate total amount from the items
+    // Check stock and calculate total amount
     let totalAmount = 0;
     for (const item of items) {
+      const product = await Product.findById(item.product);
+      if (!product) {
+        return res.status(404).json({ success: false, message: 'Product not found' });
+      }
+      if (product.stock < item.quantity) {
+        return res.status(400).json({ success: false, message: `Product ${product.name} is out of stock` });
+      }
       totalAmount += item.price * item.quantity;
     }
 
@@ -44,6 +51,13 @@ const placeOrder = async (req, res) => {
       shippingAddress,
       status: 'Confirmed',
     });
+
+    // Decrement stock for each product
+    for (const item of items) {
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: { stock: -item.quantity },
+      });
+    }
 
     // Populate product details in the response
     const populatedOrder = await Order.findById(order._id).populate(

@@ -141,4 +141,32 @@ const createProduct = async (req, res) => {
   }
 };
 
-module.exports = { getProducts, getProductById, getCategories, createProduct };
+// ==============================================
+// DELETE /api/products/:id
+// Delete a product (Admin Only)
+// ==============================================
+const deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Product deleted successfully',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting product',
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { getProducts, getProductById, getCategories, createProduct, deleteProduct };

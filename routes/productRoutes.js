@@ -13,6 +13,7 @@ const {
   getProductById,
   getCategories,
   createProduct,
+  deleteProduct,
 } = require('../controllers/productController');
 const { protect, admin } = require('../middleware/auth');
 
@@ -23,5 +24,6 @@ router.get('/:id', getProductById);
 
 // Admin routes
 router.post('/', protect, admin, createProduct);
+router.delete('/:id', protect, admin, deleteProduct);
 
 module.exports = router;

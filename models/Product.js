@@ -41,16 +41,7 @@ const productSchema = new mongoose.Schema(
     category: {
       type: String,
       required: [true, 'Category is required'],
-      enum: [
-        'T-Shirts',
-        'Jeans',
-        'Hoodies',
-        'Jackets',
-        'Shorts',
-        'Formal',
-        'Sports',
-        'Accessories',
-      ],
+      trim: true,
     },
 
     // Available sizes

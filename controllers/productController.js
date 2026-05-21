@@ -169,4 +169,37 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-module.exports = { getProducts, getProductById, getCategories, createProduct, deleteProduct };
+// ==============================================
+// PUT /api/products/:id
+// Update a product (Admin Only)
+// ==============================================
+const updateProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Product updated successfully',
+      data: product,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error updating product',
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { getProducts, getProductById, getCategories, createProduct, updateProduct, deleteProduct };
